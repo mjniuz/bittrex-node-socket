@@ -1,0 +1,27 @@
+{
+  "name": "bittrex-node-socket",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "big.js": "^5.0.3",
+    "bittrex-signalr-client": "^1.1.10",
+    "bufferutil": "^4.0.3",
+    "cloudscraper": "^1.4.1",
+    "debug": "^3.1.0",
+    "eiows": "^3.4.1",
+    "lodash": "^4.17.4",
+    "request": "^2.83.0",
+    "retry": "^0.10.1",
+    "ws": "^3.3.3"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.3",
+    "utf-8-validate": "^5.0.4"
+  }
+}
