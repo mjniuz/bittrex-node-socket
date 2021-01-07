@@ -1,6 +1,7 @@
 "use strict";
 const util  = require('util');
 const WebSocket = require('ws');
+var hasSubscribe    = false;
 
 const ws = new WebSocket.Server({
     port: 8080,
@@ -55,16 +56,19 @@ ws.on('connection', function connection(ws) {
     });
 
     console.log("=== Subscribing to 'USDT-BTC' pair");
-    client.subscribeToTickers([
-        'USDT-BTC',
-        'USDT-XLM',
-        'USDT-XRP',
-        'USDT-XMR',
-        'USDT-ADA',
-        'USDT-DOGE',
-        'USDT-LINK',
-        'USDT-MATIC',
-        'USDT-UNI',
-        'USDT-TRX',
-    ]);
+    if(!hasSubscribe){
+        client.subscribeToTickers([
+            'USDT-BTC',
+            'USDT-XLM',
+            'USDT-XRP',
+            'USDT-XMR',
+            'USDT-ADA',
+            'USDT-DOGE',
+            'USDT-LINK',
+            'USDT-MATIC',
+            'USDT-UNI',
+            'USDT-TRX',
+        ]);
+    }
+    hasSubscribe    = true;
 });
