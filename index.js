@@ -1,41 +1,38 @@
 "use strict";
 const util  = require('util');
+const http = require('http');
 const WebSocket = require('ws');
-var hasSubscribe    = false;
+const express = require('express');
 
-const ws = new WebSocket.Server({
-    port: 8080,
-    perMessageDeflate: {
-        zlibDeflateOptions: {
-            // See zlib defaults.
-            chunkSize: 1024,
-            memLevel: 7,
-            level: 3
-        },
-        zlibInflateOptions: {
-            chunkSize: 10 * 1024
-        },
-        // Other options settable:
-        clientNoContextTakeover: true, // Defaults to negotiated value.
-        serverNoContextTakeover: true, // Defaults to negotiated value.
-        serverMaxWindowBits: 10, // Defaults to negotiated value.
-        // Below options specified as default values.
-        concurrencyLimit: 10, // Limits zlib concurrency for perf.
-        threshold: 1024 // Size (in bytes) below which messages
-        // should not be compressed.
-    }
+
+const app = express();
+const server = http.createServer(app);
+
+const ws = new WebSocket.Server({ server });
+
+app.get('/', function(req, res, next) {
+    return res.send('Hello World!');
 });
 
 ws.on('open', function open() {
-    ws.send('something');
+    console.log("open new");
 });
 
+ws.on("error", function(err){
+    console.log("Caught flash policy server socket error: ");
+    console.log(err.stack);
+});
 
 ws.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
         console.log('received: %s', message);
     });
 
+
+    ws.on("error", function(err){
+        console.log("Caught flash policy server socket error: ");
+        console.log(err.stack);
+    });
 
     const SignalRClient = require('./lib/client.js');
 
@@ -47,28 +44,36 @@ ws.on('connection', function connection(ws) {
     client.on('ticker', function(data){
         console.log(util.format("Got ticker update for pair '%s'", data.pair));
 
-        try{
-            ws.send(JSON.stringify(data));
-        }catch (e) {
-            console.log({"return on send": e});
-        }
+        ws.send(JSON.stringify(data), (err) => {
+            if (err) console.error(err);
+        });
         //console.log(data);
     });
 
-    console.log("=== Subscribing to 'USDT-BTC' pair");
-    if(!hasSubscribe){
-        client.subscribeToTickers([
-            'USDT-BTC',
-            'USDT-XLM',
-            'USDT-XRP',
-            'USDT-XMR',
-            'USDT-ADA',
-            'USDT-DOGE',
-            'USDT-LINK',
-            'USDT-MATIC',
-            'USDT-UNI',
-            'USDT-TRX',
-        ]);
+    console.log("new subscribe");
+    var pairs   = [
+        'USDT-BTC',
+        'USDT-XLM',
+        'USDT-XRP',
+        'USDT-XMR',
+        'USDT-ADA',
+        'USDT-DOGE',
+        'USDT-LINK',
+        'USDT-MATIC',
+        'USDT-UNI',
+        'USDT-TRX',
+    ];
+    client.unsubscribeFromTickers(pairs);
+    setTimeout(function(){
+        client.subscribeToTickers(pairs);
+    },1000);
+});
+
+
+
+server.listen(8080, function(err) {
+    if (err) {
+        throw err;
     }
-    hasSubscribe    = true;
+    console.log(`listening on port 8080!`);
 });
