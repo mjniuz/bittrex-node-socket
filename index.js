@@ -46,7 +46,11 @@ ws.on('connection', function connection(ws) {
     client.on('ticker', function(data){
         console.log(util.format("Got ticker update for pair '%s'", data.pair));
 
-        ws.send(JSON.stringify(data));
+        try{
+            ws.send(JSON.stringify(data));
+        }catch (e) {
+            console.log({"return on send": e});
+        }
         //console.log(data);
     });
 
