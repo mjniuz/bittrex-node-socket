@@ -63,6 +63,7 @@ ws.on('connection', function connection(ws) {
         'USDT-UNI',
         'USDT-TRX',
         'USDT-BTT',
+        'USDT-CKB'
     ];
     client.unsubscribeFromTickers(pairs);
     setTimeout(function(){
